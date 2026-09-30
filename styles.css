@@ -1,0 +1,343 @@
+/* =========================================================
+   1. VARIABLES DE TEMA
+   Todos los colores viven aquí; cambiar de tema = cambiar
+   el atributo data-theme del <html>.
+   ========================================================= */
+:root,
+:root[data-theme="warm"] {          /* Claro cálido */
+  --bg: #f5efe6; --surface: #fffaf3; --surface-2: #f0e8db;
+  --text: #2d2620; --text-soft: #7b6f62; --line: #e4d9c9;
+  --accent: #8f4a66; --accent-soft: #f1dfe4; --dot: #d3c6b3;
+  --tint-1: #f8ecd6; --tint-2: #f6e1e2; --tint-3: #e5eddd;
+}
+:root[data-theme="cozy"] {          /* Oscuro cozy */
+  --bg: #1d1a19; --surface: #282322; --surface-2: #332c2a;
+  --text: #efe6da; --text-soft: #a99d90; --line: #3b3330;
+  --accent: #e0a458; --accent-soft: #3d3020; --dot: #4a4039;
+  --tint-1: #332b22; --tint-2: #33272b; --tint-3: #27302a;
+}
+:root[data-theme="pastel"] {        /* Verde pastel */
+  --bg: #eaf2e8; --surface: #f9fcf7; --surface-2: #e0ecdc;
+  --text: #24352b; --text-soft: #62786a; --line: #d2e2cd;
+  --accent: #4b8563; --accent-soft: #d5e9d8; --dot: #b9d0bd;
+  --tint-1: #e0efdd; --tint-2: #efefd5; --tint-3: #d9ebe5;
+}
+:root {
+  --font-ui: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  --hl-1: rgba(255, 208, 84, .55);  /* colores de resaltado (translúcidos: sirven en todas las paletas) */
+  --hl-2: rgba(255, 143, 171, .45);
+  --hl-3: rgba(120, 200, 140, .45);
+  /* Colores de etiqueta del calendario */
+  --lb-green: #5fae7b; --lb-blue: #5b8fd6; --lb-yellow: #e8b73c; --lb-pink: #e2799b; --lb-purple: #9a7bd1;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  line-height: 1.5;
+  transition: background .25s, color .25s;
+}
+
+h1, h2 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1rem; margin-bottom: .75rem; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Íconos SVG */
+.icon { width: 20px; height: 20px; display: block; }
+.icon-lg { width: 26px; height: 26px; }
+
+/* Botones reutilizables */
+.btn-icon, .btn-text {
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-icon { width: 36px; height: 36px; display: grid; place-items: center; }
+.btn-text { padding: .35rem .8rem; font-size: .9rem; border-color: var(--line); }
+.btn-icon:hover, .btn-text:hover { background: var(--surface-2); }
+
+/* =========================================================
+   3. ENCABEZADO
+   ========================================================= */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand { display: flex; align-items: center; gap: .6rem; color: var(--accent); text-decoration: none; }
+.brand-name { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+
+/* Contenedor del Pomodoro */
+.pomodoro {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .3rem .4rem .3rem 1rem;
+  background: var(--accent-soft);
+  border-radius: 999px;
+}
+.pomodoro-mode { font-size: .85rem; color: var(--accent); font-weight: 500; }
+.pomodoro-time { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4ch; text-align: center; }
+.pomodoro .btn-icon { border-radius: 50%; color: var(--accent); }
+.pomodoro .btn-icon:hover { background: var(--surface); }
+
+/* Botón selector de paleta */
+.btn-theme {
+  display: flex; align-items: center; gap: .5rem; padding: .4rem .8rem;
+  font: inherit; font-size: .9rem; color: var(--text);
+  background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+  transition: background .15s;
+}
+.btn-theme:hover { background: var(--surface-2); }
+
+/* =========================================================
+   4. LAYOUT PRINCIPAL (panel izquierdo + calendario)
+   ========================================================= */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+}
+
+/* --- Notas rápidas: hoja punteada estilo bullet journal --- */
+.scratchpad {
+  width: 100%;
+  height: 240px;
+  resize: vertical;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: .5rem .75rem;
+  color: var(--text);
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  line-height: 28px;
+  background-color: var(--surface-2);
+  background-image: radial-gradient(var(--dot) 1.2px, transparent 1.3px);
+  background-size: 28px 28px;
+  background-position: 0 6px;
+}
+.scratchpad::placeholder { color: var(--text-soft); }
+
+/* --- Lista de hábitos --- */
+.habits { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.habit { display: flex; align-items: flex-start; gap: .65rem; padding: .4rem .25rem; cursor: pointer; font-size: .95rem; }
+.habit input { position: absolute; opacity: 0; pointer-events: none; }
+.habit .box {
+  flex: none; width: 20px; height: 20px; margin-top: 2px;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--text-soft);
+  border-radius: 6px;
+  color: transparent;
+  transition: background .15s, border-color .15s;
+}
+.habit .box .icon { width: 14px; height: 14px; }
+.habit input:checked + .box { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.habit input:checked ~ span:last-child { color: var(--text-soft); text-decoration: line-through; }
+.habit input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* =========================================================
+   5. CALENDARIO
+   ========================================================= */
+.calendar {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.calendar-head h1 { font-size: 1.9rem; text-transform: capitalize; }
+.calendar-nav { display: flex; align-items: center; gap: .25rem; }
+
+.weekdays, .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.weekdays { padding-bottom: .5rem; color: var(--text-soft); font-size: .85rem; text-align: center; }
+
+/* Las líneas de la cuadrícula se dibujan con el fondo + gap de 1px */
+.days-grid { gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+
+.day {
+  position: relative;
+  /* Ahora es un <button>: se reinician sus estilos por defecto */
+  display: flex; align-items: flex-start; justify-content: flex-start;
+  width: 100%; border: 0; margin: 0;
+  font-family: inherit; color: var(--text); text-align: left; cursor: pointer;
+  min-height: 96px;
+  padding: .5rem .6rem;
+  background: var(--surface);
+  font-size: .95rem;
+  transition: background .15s;
+}
+.day:hover { background: var(--surface-2); }
+.day.is-outside { color: var(--text-soft); opacity: .55; }
+
+/* Día actual: número dentro de un círculo */
+.day.is-today .day-num {
+  display: inline-grid; place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+/* =========================================================
+   6. VISTA DIARIA (MODAL)
+   ========================================================= */
+.day-modal {
+  width: min(720px, calc(100% - 2rem));
+  max-height: min(85vh, 760px);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 60px rgba(20, 24, 32, .25);
+}
+.day-modal[open] { display: flex; flex-direction: column; animation: modal-in .18s ease-out; }
+.day-modal::backdrop { background: rgba(20, 24, 32, .5); }
+
+@keyframes modal-in { from { opacity: 0; transform: translateY(8px); } }
+
+.modal-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem .5rem; }
+.modal-head h2 { margin: 0; font-size: 1.4rem; }
+
+/* Pestañas */
+.tabs-bar { display: flex; align-items: center; gap: .25rem; padding: 0 1.25rem; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: .25rem; overflow-x: auto; }
+.tab {
+  flex: none; padding: .55rem .9rem; font: inherit; font-size: .92rem;
+  color: var(--text-soft); background: none; border: 0; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color .15s;
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); font-weight: 500; border-bottom-color: var(--accent); }
+.tabs-bar > .btn-icon { flex: none; margin-bottom: 2px; color: var(--text-soft); }
+
+/* Contenido de las pestañas */
+.tab-panels { padding: 1.25rem; overflow-y: auto; }
+.tab-panel[hidden] { display: none; }
+
+
+/* =========================================================
+   6b. PERSISTENCIA VISUAL, BITÁCORA Y HÁBITOS
+   ========================================================= */
+/* Día seleccionado y día con notas */
+.day.is-selected { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.day-mark { position: absolute; left: .6rem; right: .6rem; bottom: .5rem; height: 5px; border-radius: 5px; background: var(--lb, var(--accent)); }
+.day-dot { position: absolute; top: .65rem; right: .65rem; width: 6px; height: 6px; border-radius: 50%; background: var(--text-soft); }
+
+/* Barra de formato */
+.toolbar { display: flex; align-items: center; gap: .25rem; padding: .45rem 1.25rem; border-bottom: 1px solid var(--line); }
+.toolbar button { min-width: 32px; height: 32px; padding: 0 .5rem; font: inherit; font-size: .88rem; color: var(--text); background: none; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+.toolbar button:hover { background: var(--surface-2); }
+.tb-sep { width: 1px; height: 20px; margin: 0 .35rem; background: var(--line); }
+.toolbar .swatch { min-width: 22px; width: 22px; height: 22px; padding: 0; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+.sw-1 { background: var(--hl-1) !important; } .sw-2 { background: var(--hl-2) !important; } .sw-3 { background: var(--hl-3) !important; }
+
+/* Bitácora: tarjetas suaves con letra manuscrita en los títulos */
+.log-intro { margin: 0 0 1rem; font-family: var(--font-hand); font-size: 1.45rem; color: var(--text-soft); }
+.note-card { margin-bottom: 1rem; padding: .85rem 1.1rem 1rem; background: var(--tint); border: 1px solid var(--line); border-radius: 14px; transition: border-color .15s; }
+.note-card:focus-within { border-color: var(--accent); }
+.note-card h3 { margin: 0 0 .3rem; font-family: var(--font-hand); font-size: 1.55rem; font-weight: 500; }
+.tint-1 { --tint: var(--tint-1); } .tint-2 { --tint: var(--tint-2); } .tint-3 { --tint: var(--tint-3); }
+
+/* Editores de texto enriquecido (contenteditable) */
+.editor { min-height: 84px; line-height: 1.7; outline: none; overflow-wrap: anywhere; }
+.editor:empty::before { content: attr(data-placeholder); color: var(--text-soft); pointer-events: none; }
+.editor.paper {
+  min-height: 320px; padding: .5rem .9rem; border-radius: var(--radius-sm);
+  font-family: var(--font-hand); font-size: 1.35rem; line-height: 28px;
+  background-color: var(--surface-2);
+  background-image: radial-gradient(var(--dot) 1.2px, transparent 1.3px);
+  background-size: 28px 28px; background-position: 0 6px;
+}
+
+/* Hábitos editables */
+.habit-row { display: flex; align-items: center; gap: .25rem; position: relative; }
+.habit-row .habit { flex: 1; min-width: 0; }
+.habit-del { flex: none; width: 28px; height: 28px; display: grid; place-items: center; color: var(--text-soft); background: none; border: 0; border-radius: 6px; cursor: pointer; }
+.habit-del .icon { width: 16px; height: 16px; }
+.habit-del:hover { background: var(--surface-2); color: var(--text); }
+@media (hover: hover) { .habit-del { opacity: 0; } .habit-row:hover .habit-del, .habit-del:focus-visible { opacity: 1; } }
+.habit-add { display: flex; gap: .35rem; margin-top: .75rem; }
+.habit-add input { flex: 1; min-width: 0; padding: .45rem .7rem; font: inherit; font-size: .92rem; color: var(--text); background: var(--surface-2); border: 1px solid transparent; border-radius: var(--radius-sm); }
+.habit-add input:focus { outline: none; border-color: var(--accent); }
+.habit-add .btn-icon { color: var(--accent); }
+
+/* =========================================================
+   6c. ETIQUETAS, LIMPIAR DÍA Y POMODORO
+   ========================================================= */
+.lb-green { --lb: var(--lb-green); } .lb-blue { --lb: var(--lb-blue); } .lb-yellow { --lb: var(--lb-yellow); }
+.lb-pink { --lb: var(--lb-pink); } .lb-purple { --lb: var(--lb-purple); }
+
+.modal-actions { display: flex; align-items: center; gap: .35rem; }
+.modal-actions .btn-text { color: var(--text-soft); }
+
+.label-row { display: flex; align-items: center; gap: .5rem; padding: .25rem 1.25rem .75rem; font-size: .9rem; color: var(--text-soft); }
+.label-row .lb { width: 22px; height: 22px; padding: 0; border: 2px solid var(--surface); border-radius: 50%; background: var(--lb); box-shadow: 0 0 0 1px var(--line); cursor: pointer; }
+.label-row .lb[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--text); }
+.label-row .btn-text { margin-left: auto; padding: .2rem .6rem; font-size: .82rem; color: var(--text-soft); }
+
+.confirm-bar { display: flex; align-items: center; gap: .5rem; margin: 0 1.25rem .5rem; padding: .5rem .75rem; font-size: .92rem; background: var(--accent-soft); border-radius: var(--radius-sm); }
+.confirm-bar[hidden] { display: none; }
+.confirm-bar span { flex: 1; }
+.confirm-bar #confirm-yes { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+
+/* Pomodoro: estados */
+.pomodoro.is-running { box-shadow: 0 0 0 2px var(--accent); }
+.pomodoro.is-done { animation: pomo-pulse 1s ease-in-out 3; }
+.pomodoro.is-done .pomodoro-time { color: var(--accent); }
+@keyframes pomo-pulse { 50% { transform: scale(1.05); } }
+
+/* =========================================================
+   7. RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .app-header { flex-wrap: wrap; }
+  .pomodoro { order: 3; width: 100%; justify-content: center; }
+}
+@media (max-width: 560px) {
+  .layout { padding: 1rem; }
+  .calendar { padding: 1rem; }
+  .day { min-height: 56px; padding: .35rem; font-size: .85rem; }
+  .pomodoro-mode, #theme-name { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
